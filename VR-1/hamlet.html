@@ -1,0 +1,338 @@
+<head>
+  <link href="http://vjs.zencdn.net/5.16.0/video-js.css" rel="stylesheet">
+
+  <!-- If you'd like to support IE8 -->
+  <script src="http://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+  <script src="http://vjs.zencdn.net/5.16.0/video.js"></script>
+
+  <script src="path.js"></script>
+  
+</head>
+
+<body>
+
+<style>
+/*
+  Player Skin Designer for Video.js
+  http://videojs.com
+
+  To customize the player skin edit 
+  the CSS below. Click "details" 
+  below to add comments or questions.
+  This file uses some SCSS. Learn more  
+  at http://sass-lang.com/guide)
+
+  This designer can be linked to at:
+  http://codepen.io/heff/pen/EarCt/left/?editors=010
+*/
+.video-js {
+  /* The base font size controls the size of everything, not just text.
+     All dimensions use em-based sizes so that the scale along with the font size.
+     Try increasing it to 15px and see what happens. */
+  font-size: 25px;
+  /* The main font color changes the ICON COLORS as well as the text */
+  color: #fff;
+}
+
+/* The "Big Play Button" is the play button that shows before the video plays.
+   To center it set the align values to center and middle. The typical location
+   of the button is the center, but there is trend towards moving it to a corner
+   where it gets out of the way of valuable content in the poster image.*/
+.vjs-default-skin .vjs-big-play-button {
+  /* The font size is what makes the big play button...big. 
+     All width/height values use ems, which are a multiple of the font size.
+     If the .video-js font-size is 10px, then 3em equals 30px.*/
+  font-size: 5em;
+  /* We're using SCSS vars here because the values are used in multiple places.
+     Now that font size is set, the following em values will be a multiple of the
+     new font size. If the font-size is 3em (30px), then setting any of
+     the following values to 3em would equal 30px. 3 * font-size. */
+  /* 1.5em = 45px default */
+  line-height: 2em;
+  height: 2em;
+  width: 3em;
+  /* 0.06666em = 2px default */
+  border: 0.06666em solid #fff;
+  /* 0.3em = 9px default */
+  border-radius: 0.6em;
+  /* Align center */
+  left: 50%;
+  top: 50%;
+  margin-left: -1.5em;
+  margin-top: -1em;
+}
+
+/* The default color of control backgrounds is mostly black but with a little
+   bit of blue so it can still be seen on all-black video frames, which are common. */
+.video-js .vjs-control-bar,
+.video-js .vjs-big-play-button,
+.video-js .vjs-menu-button .vjs-menu-content {
+  /* IE8 - has no alpha support */
+  background-color: #2B2B2B;
+  /* Opacity: 1.0 = 100%, 0.0 = 0% */
+  background-color: rgba(43, 43, 43, 0.7);
+}
+
+/* Slider - used for Volume bar and Progress bar */
+.video-js .vjs-slider {
+  background-color: #7f7f7f;
+  background-color: rgba(127, 127, 127, 0.5);
+}
+
+/* The slider bar color is used for the progress bar and the volume bar
+   (the first two can be removed after a fix that's coming) */
+.video-js .vjs-volume-level,
+.video-js .vjs-play-progress,
+.video-js .vjs-slider-bar {
+  background: #fff;
+}
+
+/* The main progress bar also has a bar that shows how much has been loaded. */
+.video-js .vjs-load-progress {
+  /* For IE8 we'll lighten the color */
+  background: #bfbfbf;
+  /* Otherwise we'll rely on stacked opacities */
+  background: rgba(127, 127, 127, 0.5);
+}
+
+/* The load progress bar also has internal divs that represent
+   smaller disconnected loaded time ranges */
+.video-js .vjs-load-progress div {
+  /* For IE8 we'll lighten the color */
+  background: white;
+  /* Otherwise we'll rely on stacked opacities */
+  background: rgba(127, 127, 127, 0.75);
+}
+
+
+.fullscreen-bg {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+
+    width: 100%;
+    height: 100%;
+    /*z-index: -100;*/
+
+}
+
+.fullscreen-bg__video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    background-repeat: repeat;
+    z-index: 1;
+}
+
+.myvideo{
+      /*z-index: -100;*/
+}
+
+.selected {
+  display: block;
+}
+
+.unselected {
+  display: none;
+}
+
+button{
+  width: 100px;
+  height: 100px;
+  font-size: 50px;
+  z-index: 100;
+  font-family: Impact;
+  color: black;
+  background-color: white;
+  border: none;
+  opacity: 0.1;
+  margin: 5px;
+  margin-top: 15px;
+  margin-right: 60px;
+
+  cursor: hand;
+
+}
+
+button:hover {
+  opacity: 1;  
+}
+
+.btn-selected {
+  opacity: 0.5;
+
+}
+
+#canvas {
+  position:absolute;
+  z-index: 50;
+}
+
+html, body{
+  z-index: -200;
+}
+
+</style>
+
+  <canvas id="canvas" style="z-index: 20;" onclick="clickCanvas()" width=600 height=400>
+  </canvas>
+
+  <div style="position:absolute; right: 0px; z-index: 3; margin: 0px; margin-right: 0px; padding: 0px;">
+      <button id="btanya" class="btn-selected" onclick="setMeSelected('tanya');">1</button><br/>
+      <button id="bdanil" onclick="setMeSelected('danil');">2</button><br/>
+      <button id="bnadya" onclick="setMeSelected('nadya');">3</button>
+      <span id="tick" style="display: none;"></span>
+  </div>
+
+
+  <div class="fullscreen-bg">
+  
+    <video id="tanya" class="video-js vjs-big-play-centered fullscreen-bg__video myvideo selected" controls preload="auto" width="854" height="480"
+     data-setup='{}' >
+      <source src="https://www.dropbox.com/s/rs6fbdyklzujoen/SINGLE-TANYA_1.mp4?dl=1" type='video/mp4'>
+      <!-- <source src="https://www.dropbox.com/s/bckd8jwgz1fioll/sSINGLE-TANYA_1_1.mp4?dl=1" type='video/mp4'> -->
+
+      
+      <!-- <source src="SINGLE-TANYA_1.mp4" type='video/mp4'> -->
+    </video>
+    
+    <video id="danil" class="video-js vjs-big-play-centered fullscreen-bg__video myvideo unselected" controls preload="auto" width="854" height="480"
+     data-setup='{}' >
+      <!-- <source src="SINGLE-DANIL_1.mp4" type='video/mp4'> -->
+      <source src="https://www.dropbox.com/s/r22wgw76whzsnsj/SINGLE-DANIL_1.mp4?dl=1" type='video/mp4'>
+      <!-- <source src="https://www.dropbox.com/s/5u2nmhnmpwe2tvc/sSINGLE-DANIL_1.mp4?dl=1" type='video/mp4'> -->
+      
+      
+    </video>
+
+      <video id="nadya" class="video-js vjs-big-play-centered fullscreen-bg__video myvideo unselected" controls preload="auto" width="854" height="480"
+     data-setup='{}' >
+      <!-- <source src="SINGLE-NADYA_1.mp4" type='video/mp4'> -->
+      <source src="https://www.dropbox.com/s/scohvu7oq3xq9sz/SINGLE-NADYA_1.mp4?dl=1" type='video/mp4'>
+      <!-- <source src="https://www.dropbox.com/s/yk4qiksui3usbr7/sSINGLE-NADYA_1.mp4?dl=1" type='video/mp4'> -->
+      
+      
+    </video>
+
+  </div>
+
+  <!-- <div class="video-overlay" style="background-image: url(&quot;black-medium-checks.png&quot;); opacity: 0.3;"></div> -->
+
+  <svg height="600" id="sv1" style="border: solid 1px black; clear: both;  display:none;" width="800">
+      <style type="text/css">
+          .st0{fill:none;}
+      .st1{fill:none;stroke:#000000;stroke-miterlimit:10;}
+      .st2{font-family:'SegoeUI-Light';}
+      .st3{font-size:12px;}
+      .st4{fill:none;stroke:#FF1D25;stroke-miterlimit:10;}
+      .st5{display:none;}
+      .st6{display:inline;fill:#FFFFFF;}
+      .st7{fill:none;stroke:#7AC943;stroke-miterlimit:10;}
+      .st8{fill:none;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+      </style>
+      <g>
+          <path class="st4" d="M141,99.5h59c0,0,3.5,0.3,3.5,3c0,2.7,0,19.3,0,23.1c0,3.9,2.9,3.9,2.9,3.9h44c0,0,3.1,0,3.1,2.6c0,2.6-0.2,11.6,0,15.2c0.2,3.6,2.9,3.6,2.9,3.6s31.6-0.5,35.4-0.4s3.7,2.5,3.7,2.5s0.2,20.5,0,24s2.3,3.5,2.3,3.5s82.4,0,85.3,0s2.5-3.4,2.5-3.4s-0.2-18.1,0-21.1c0.2-3-0.1-2.4,2.5-2.5s2.5-3.1,2.5-3.1s0.1-18.2,0-20c-0.1-1.8,0.3-2.9,2-2.6c3.3,0.1,2.5-0.3,2.5-0.3" id="ldanil">
+          </path>
+          <path class="st7" d="M161,72.5c27.2,0,54.4,0,81.6,0c1.3,0,3.9,2,3.9,4.4s0,27.1,0,40.6c0,1.3,0,4.1,2.3,4s2.3,2.6,2.3,2.6l0.4,27.3c0,0,0.2,3.1,3.2,3.1s5.6,0,9.5,0s3.4,3.3,3.4,3.3v25.5c0,0,0.3,3.2,3.5,3.2s98.5,0,98.5,0s3,0.3,3-3c0-3.3,0-33.4,0-33.4s-0.5-2.6,2.2-2.6c2.8,0,2.8-1.1,2.8-3.1c0-2,0-20.1,0-20.1s0.6-2.8,3.5-2.8s9.3,0,14,0" id="lnadya">
+          </path>
+          <path class="st8" d="M93,22.5c0,0,73.5,0,87,0c13.5,0,3.2,25.6,15.3,25.4c7.4-0.1,14.7-0.7,20.2-0.3c5.5,0.4,5,6.2,5,6.2s-1.8,59.8,0,66s4.2,5.2,4.2,5.2c37.2-0.2,71.8-0.5,75.3-0.5s3.5,5,3.5,5v16.2c-0.2,4.2,0,4.8,2.7,5s3.3,2.1,3.3,4.2c0,2.1,0,15.5,0,15.5s-0.8,5.5,3.2,5.5s61.6-0.4,65.2-0.5c3.6,0,3.5-4.3,3.5-4.3V155c0,0-0.3-4.1,1.7-4.2c2.1-0.2,2.3-4,2.3-4v-17.3c0.1-2.2-1.2-4.5,3.3-4.7l6.2-0.3" id="ltanya">
+          </path>
+      </g>
+  </svg>
+
+
+  <script src="lines.js"></script>
+  <script>
+
+function setMeSelected(h){
+
+  player.pause();
+  player.on("timeupdate", function(){});
+
+
+  for(var p in players){
+    $("#"+p).removeClass("selected");
+    $("#"+p).addClass("unselected");
+  }
+
+  $("button").removeClass("btn-selected");
+  $("#b"+h).addClass("btn-selected");
+
+  var T = player.currentTime() * 300.0 / (9*60 + 5);
+  setSelected(h);
+
+  $("#"+h).removeClass("unselected");
+  $("#"+h).addClass("selected");
+
+  player = players[h];
+
+  player.play();
+  // player.playbackRate( 2.0 )
+  player.currentTime(T * (9*60 + 5) / 300);
+
+  player.ready(function () {
+      this.on('timeupdate', function () {
+        var T = this.currentTime() * 300.0 / (9*60 + 5)
+        tick(T);
+      })
+    });
+
+}
+
+
+function clickCanvas(){
+  if($('#canvas').clicked == undefined)
+    $('#canvas').clicked = false;
+  $('#canvas').clicked = !$('#canvas').clicked;
+}
+
+    var players = {
+      "tanya":  videojs('tanya'),
+      "danil":  videojs('danil'),
+      "nadya":  videojs('nadya'),
+    };
+
+    for(var p in players){
+      players[p].play();
+      players[p].pause();
+    }
+
+    var player = players.tanya;
+
+    player.ready(function () {
+      this.on('timeupdate', function () {
+        var T = this.currentTime() * 300.0 / (9*60 + 5);
+        tick(T);
+      })
+    });
+
+    window.onload = function(){
+      player.play();
+        // player.playbackRate( 2.0 );
+
+    };
+
+
+
+
+
+  </script>
+</body>
