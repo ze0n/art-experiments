@@ -1,4 +1,4 @@
-function pathToPolygon(path,samples){
+function pathToPolygon(path, samples){
     if (!samples) samples = 0;
     var doc = path.ownerDocument;
     var poly = doc.createElementNS('http://www.w3.org/2000/svg','polygon');
@@ -22,7 +22,7 @@ function pathToPolygon(path,samples){
             if (!lastPoint || x!=lastPoint[0] || y!=lastPoint[1]) points.push([x,y]);
         }
     };
-    for (var d=0,len=path.getTotalLength(),step=len/samples;d<=len;d+=step){
+    for (var d=0,len=path.getTotalLength(),step=len/samples; d<=len; d+=step){
         var seg = segments[path.getPathSegAtLength(d)];
         var pt  = path.getPointAtLength(d);
         if (seg != lastSeg){
