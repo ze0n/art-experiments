@@ -4,7 +4,9 @@ function pathToPolygon(path, samples){
     var poly = doc.createElementNS('http://www.w3.org/2000/svg','polygon');
 
     // Put all path segments in a queue
-    for (var segs=[],s=path.pathSegList,i=s.numberOfItems-1;i>=0;--i) segs[i] = s.getItem(i);
+    for (var segs=[],s=path.pathSegList,i=s.numberOfItems-1;i>=0;--i) 
+		segs[i] = s.getItem(i);
+	
     var segments = segs.concat();
 
     var seg,lastSeg,points=[],x,y;

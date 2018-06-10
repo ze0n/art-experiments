@@ -333,6 +333,7 @@
         window.SVGPathElement.prototype.createSVGPathSegCurvetoQuadraticSmoothAbs = function(x, y) { return new window.SVGPathSegCurvetoQuadraticSmoothAbs(undefined, x, y); }
         window.SVGPathElement.prototype.createSVGPathSegCurvetoQuadraticSmoothRel = function(x, y) { return new window.SVGPathSegCurvetoQuadraticSmoothRel(undefined, x, y); }
 
+    }
         if (!("getPathSegAtLength" in window.SVGPathElement.prototype)) {
             // Add getPathSegAtLength to SVGPathElement.
             // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-__svg__SVGPathElement__getPathSegAtLength
@@ -358,7 +359,6 @@
                 return lastPathSegment;
             }
         }
-    }
 
     // Checking for SVGPathSegList in window checks for the case of an implementation without the
     // SVGPathSegList API.
